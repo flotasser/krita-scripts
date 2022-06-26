@@ -1,6 +1,6 @@
 # Krita Lightbox. Makes detailing/tracing layers easy.
 # Put it in your Tools>Scripts>Ten Scripts for ease of use.
-# Big thanks to tiar, KnowZero, freyalupen, LunarKreature and the great
+# Big thanks to tiar, KnowZero, freyalupen, LunarKreatures and the great
 # Krita-Artists.org-Community for helping me with my first script!
 #
 # If you use this script in a group layer, be sure to activate 
@@ -28,9 +28,11 @@ fill = doc.createFillLayer("Non-Photo Blue", "color", infoFill, select)
 # Take the current Painting Layers Opacity down to 50% before creating a new one
 current_op = doc.activeNode().opacity()
 if not doc.activeNode() == doc.nodeByName("Background"):
-	doc.activeNode().setOpacity(current_op*0.5)
-	doc.activeNode().setBlendingMode("multiply")
+	if doc.activeNode() == doc.nodeByName("Paint Layer"):
+		doc.activeNode().setOpacity(int(current_op*0.5))
+		doc.activeNode().setBlendingMode("multiply")
 	
+
 # Is there a 'Non-Photo Blue Layer'? If yes - delete before creating a new one
 if doc.nodeByName("Non-Photo Blue"):
  	doc.nodeByName("Non-Photo Blue").remove()
@@ -43,5 +45,10 @@ layerBlueFill.setBlendingMode("screen")
 
 paint = doc.createNode("Paint Layer", "paintlayer")
 topNode.addChildNode(paint, None)
+
+# if the top layer is a group layer, this sets it to pass through mode automatically. Thanks for the idea and the script to LunarKreatures!
+if topNode.type() == "grouplayer" and topNode.name() != "root":
+    if not topNode.passThroughMode():
+        topNode.setPassThroughMode(True)
 
 doc.refreshProjection()
